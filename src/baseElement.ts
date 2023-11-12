@@ -1,26 +1,28 @@
 export default class BaseElement {
-  components: THREE.Mesh | THREE.Mesh[] = [];
-  private scene: THREE.Scene | null = null;
+  components: THREE.Mesh[] = [];
+  scene: THREE.Scene;
 
-  register(scene: THREE.Scene) {
-    if (Array.isArray(this.components)) {
-      this.components.forEach((comp) => {
-        scene.add(comp);
-      });
-    } else {
-      scene.add(this.components);
-    }
+  constructor(scene: THREE.Scene) {
+    this.scene = scene;
   }
 
-  remove() {
-    if (Array.isArray(this.components)) {
-      this.components.forEach((comp) => {
-        this.scene?.remove(comp);
+  register(scene: THREE.Scene) {
+    this.components.forEach((comp) => {
+      scene.add(comp);
+    });
+  }
+
+  remove(dispose: boolean = false) {
+    this.components.forEach((comp) => {
+      this.scene?.remove(comp);
+      if (dispose) {
         comp.geometry.dispose();
-      });
-    } else {
-      this.scene?.remove(this.components);
-      this.components.geometry.dispose();
-    }
+        if (Array.isArray(comp.material)) {
+          comp.material.forEach((mi) => mi.dispose());
+        } else {
+          comp.material.dispose();
+        }
+      }
+    });
   }
 }

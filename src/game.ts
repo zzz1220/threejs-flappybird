@@ -4,18 +4,25 @@ import Bird from "./bird";
 import Background from "./background";
 import Stats from "three/addons/libs/stats.module.js";
 import { PLANE_PIXEL_WIDTH, PLANE_PIXEL_HEIGHT } from "./constant";
+import Menu from "./menu";
+import Gameover from "./gameover";
+import Pillars from "./pillars";
 
 const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
 
-//创建stats对象
-const stats = new Stats();
-//stats.domElement:web页面上输出计算结果,一个div元素，
-document.body.appendChild(stats.domElement);
+let stats: any;
+if (import.meta.env.DEV) {
+  //创建stats对象
+  stats = new Stats();
+  //stats.domElement:web页面上输出计算结果,一个div元素，
+  document.body.appendChild(stats.domElement);
+}
 
 export default class Game {
   private isRunning = false;
-  private gameover = false;
+
+  private score = -1; // -1 表示第一次进入游戏
 
   private scene = new THREE.Scene();
   private camera = new THREE.OrthographicCamera(
@@ -24,16 +31,19 @@ export default class Game {
     PLANE_PIXEL_HEIGHT / 2,
     -PLANE_PIXEL_HEIGHT / 2,
     0,
-    10,
+    2,
   );
 
   private renderer = new THREE.WebGLRenderer({ antialias: true });
 
   // game objects
-  private bird: Bird = new Bird();
-  private background = new Background();
+  private bird: Bird = new Bird(this.scene);
+  private background = new Background(this.scene);
+  private menu = new Menu(this.scene);
+  private gameover = new Gameover(this.scene);
+  private pillars = new Pillars(this.scene);
 
-  constructor(options: any) {
+  constructor() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(WIDTH, HEIGHT);
@@ -46,10 +56,6 @@ export default class Game {
     this.onWindowResize();
     //
 
-    //
-    this.bird.register(this.scene);
-    this.background.register(this.scene);
-
     this.animate();
   }
 
@@ -61,39 +67,18 @@ export default class Game {
 
   draw() {}
 
-  showGameover() {
-    const loader = new THREE.TextureLoader();
-    const plane = new THREE.PlaneGeometry(192, 42);
-    const texture1 = loader.load("sprites/gameover.png");
-    const material = new THREE.MeshBasicMaterial({
-      map: texture1,
-      transparent: true,
-    });
-    const mesh = new THREE.Mesh(plane, material);
-    this.scene.add(mesh);
-  }
-
-  showHomePage() {
-    const loader = new THREE.TextureLoader();
-    const plane = new THREE.PlaneGeometry(184, 267);
-    const texture1 = loader.load("sprites/message.png");
-    const material = new THREE.MeshBasicMaterial({
-      map: texture1,
-      transparent: true,
-    });
-    const mesh = new THREE.Mesh(plane, material);
-    this.scene.add(mesh);
-  }
-
   bindOnClick() {
     window.addEventListener("click", () => {
       this.bird.fly();
       if (!this.isRunning) {
-        this.isRunning = true;
-        this.gameover = false;
-        if (this.gameover) {
+        if (this.score === -1) {
+          this.score = 0;
         } else {
+          this.bird.reset();
         }
+        this.isRunning = true;
+        this.gameover.hide();
+        this.menu.hide();
       }
     });
   }
@@ -103,20 +88,21 @@ export default class Game {
   }
 
   animate() {
-    // running
     if (this.isRunning) {
-      stats.update();
+      if (import.meta.env.DEV) {
+        stats.update();
+      }
       this.bird.update();
       this.background.update();
+      this.pillars.update();
       if (this.bird.checkDead()) {
         this.isRunning = false;
-        this.gameover = true;
-        this.showGameover();
+        this.gameover.show();
       }
     }
-    // not begin the game, first enter the page
-    if (!this.isRunning && !this.gameover) {
-      this.showHomePage();
+
+    if (!this.isRunning && this.score === -1) {
+      this.menu.show();
     }
     requestAnimationFrame(this.animate.bind(this));
 
