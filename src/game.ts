@@ -7,6 +7,7 @@ import { PLANE_PIXEL_WIDTH, PLANE_PIXEL_HEIGHT } from "./constant";
 import Menu from "./menu";
 import Gameover from "./gameover";
 import Pillars from "./pillars";
+import Score from "./score";
 
 const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
@@ -42,6 +43,7 @@ export default class Game {
   private menu = new Menu(this.scene);
   private gameover = new Gameover(this.scene);
   private pillars = new Pillars(this.scene);
+  private scorePane = new Score(this.scene);
 
   constructor() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -50,7 +52,6 @@ export default class Game {
     document.body.appendChild(this.renderer.domElement);
 
     audioController.bindCamera(this.camera);
-
     // bind event
     this.bindOnClick();
     this.onWindowResize();
@@ -79,6 +80,7 @@ export default class Game {
         this.isRunning = true;
         this.gameover.hide();
         this.menu.hide();
+        this.scorePane.hide();
       }
     });
   }
@@ -98,6 +100,7 @@ export default class Game {
       if (this.bird.checkDead()) {
         this.isRunning = false;
         this.gameover.show();
+        this.scorePane.showScore(143423);
       }
     }
 

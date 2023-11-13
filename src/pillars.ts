@@ -12,7 +12,10 @@ class Pillar {
     texture.needsUpdate = true;
     texture.flipY = true;
     const geometry = new THREE.PlaneGeometry(80, 400);
-    const material = new THREE.MeshBasicMaterial({ map: texture, opacity: 0 });
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+    });
     material.map!.needsUpdate = true;
     const bottom = new THREE.Mesh(geometry, material);
     bottom.position.set(x, y, 0);
