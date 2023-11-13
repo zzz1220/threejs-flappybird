@@ -39,7 +39,8 @@ export default class Background extends BaseElement {
     const material = new THREE.MeshBasicMaterial({ map: texture });
     material.map!.needsUpdate = true;
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, -500, 0);
+    mesh.position.y = -310;
+    mesh.position.z = 3;
     this.components.push(mesh);
   }
 

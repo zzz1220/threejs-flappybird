@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import audioContriller, { Audio } from "./audioController";
 import BaseElement from "./baseElement";
+import { setScore } from "./gameStatus";
 
 const downflap = "sprites/bluebird-downflap.png";
 const midflap = "sprites/bluebird-midflap.png";
@@ -16,7 +17,6 @@ export default class Bird extends BaseElement {
   mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial> | null = null;
 
   private y = 0;
-
   private speed = 0;
 
   constructor(scene: THREE.Scene) {
@@ -30,7 +30,7 @@ export default class Bird extends BaseElement {
       transparent: true,
     });
     this.mesh = new THREE.Mesh(body, material);
-    this.mesh.position.set(0, 0, 0);
+    this.mesh.position.set(0, 0, 3);
     this.components.push(this.mesh);
     this.register(scene);
   }
@@ -41,7 +41,7 @@ export default class Bird extends BaseElement {
   }
 
   checkDead() {
-    if (this.y < -400 || this.y > 500) {
+    if (this.y < -206 || this.y > 256) {
       audioContriller.play(Audio.die);
       this.mesh!.rotation.z = -Math.PI * 0.25;
       return true;
@@ -51,6 +51,7 @@ export default class Bird extends BaseElement {
 
   reset() {
     this.y = 0;
+    setScore(0);
   }
 
   update() {

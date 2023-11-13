@@ -21,5 +21,8 @@
     "@tweenjs/tween.js": "^21.0.0",
     "@types/three": "^0.158.2",
     "three": "^0.158.0"
+  },
+  "volta": {
+    "node": "18.18.2"
   }
 }

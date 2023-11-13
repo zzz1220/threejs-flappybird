@@ -8,6 +8,8 @@ import Menu from "./menu";
 import Gameover from "./gameover";
 import Pillars from "./pillars";
 import Score from "./score";
+import score from "./score";
+import { addScore, getScore } from "./gameStatus";
 
 const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
@@ -23,22 +25,20 @@ if (import.meta.env.DEV) {
 export default class Game {
   private isRunning = false;
 
-  private score = -1; // -1 表示第一次进入游戏
-
   private scene = new THREE.Scene();
   private camera = new THREE.OrthographicCamera(
-    (PLANE_PIXEL_WIDTH * (window.innerWidth / window.innerHeight)) / -2,
-    (PLANE_PIXEL_WIDTH * (window.innerWidth / window.innerHeight)) / 2,
+    PLANE_PIXEL_WIDTH / -2,
+    PLANE_PIXEL_WIDTH / 2,
     PLANE_PIXEL_HEIGHT / 2,
     -PLANE_PIXEL_HEIGHT / 2,
     0,
-    2,
+    9,
   );
 
   private renderer = new THREE.WebGLRenderer({ antialias: true });
 
   // game objects
-  private bird: Bird = new Bird(this.scene);
+  private bird = new Bird(this.scene);
   private background = new Background(this.scene);
   private menu = new Menu(this.scene);
   private gameover = new Gameover(this.scene);
@@ -48,14 +48,13 @@ export default class Game {
   constructor() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(WIDTH, HEIGHT);
-    document.body.appendChild(this.renderer.domElement);
-
+    this.renderer.setSize(PLANE_PIXEL_WIDTH, PLANE_PIXEL_HEIGHT);
+    document.getElementById("app")?.appendChild(this.renderer.domElement);
+    this.camera.position.z = 3;
     audioController.bindCamera(this.camera);
     // bind event
     this.bindOnClick();
     this.onWindowResize();
-    //
 
     this.animate();
   }
@@ -69,24 +68,19 @@ export default class Game {
   draw() {}
 
   bindOnClick() {
-    window.addEventListener("click", () => {
+    document.addEventListener("click", () => {
       this.bird.fly();
       if (!this.isRunning) {
-        if (this.score === -1) {
-          this.score = 0;
-        } else {
-          this.bird.reset();
-        }
+        this.bird.reset();
         this.isRunning = true;
         this.gameover.hide();
         this.menu.hide();
-        this.scorePane.hide();
       }
     });
   }
 
   onWindowResize() {
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(PLANE_PIXEL_WIDTH, PLANE_PIXEL_HEIGHT);
   }
 
   animate() {
@@ -97,14 +91,14 @@ export default class Game {
       this.bird.update();
       this.background.update();
       this.pillars.update();
+      this.scorePane.update();
       if (this.bird.checkDead()) {
         this.isRunning = false;
         this.gameover.show();
-        this.scorePane.showScore(143423);
       }
     }
 
-    if (!this.isRunning && this.score === -1) {
+    if (!this.isRunning && getScore() === -1) {
       this.menu.show();
     }
     requestAnimationFrame(this.animate.bind(this));
