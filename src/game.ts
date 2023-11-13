@@ -8,11 +8,8 @@ import Menu from "./menu";
 import Gameover from "./gameover";
 import Pillars from "./pillars";
 import Score from "./score";
-import score from "./score";
-import { addScore, getScore } from "./gameStatus";
 
-const WIDTH = window.innerWidth;
-const HEIGHT = window.innerHeight;
+import { getScore } from "./gameStatus";
 
 let stats: any;
 if (import.meta.env.DEV) {

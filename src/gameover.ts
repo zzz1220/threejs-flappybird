@@ -16,6 +16,7 @@ export default class Gameover extends BaseElement {
     this.material = material;
     material.visible = false;
     const mesh = new THREE.Mesh(plane, material);
+    mesh.position.z = 3;
     this.components.push(mesh);
     this.register(scene);
   }

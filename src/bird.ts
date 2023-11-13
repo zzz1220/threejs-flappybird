@@ -46,6 +46,8 @@ export default class Bird extends BaseElement {
       this.mesh!.rotation.z = -Math.PI * 0.25;
       return true;
     }
+    // TODO: 判断bird 和柱子相撞
+
     return false;
   }
 

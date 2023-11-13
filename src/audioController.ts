@@ -17,6 +17,7 @@ class AudioController {
     camera.add(this.listener);
   }
 
+  // TODO: 先加载再播放，不要重复加载
   play(audio: Audio) {
     this.audioLoader.load(audio, (buffer) => {
       this.sound.setBuffer(buffer);

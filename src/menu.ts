@@ -15,6 +15,8 @@ export default class Menu extends BaseElement {
     material.visible = false;
     this.material = material;
     const mesh = new THREE.Mesh(plane, material);
+    mesh.position.y = 47;
+    mesh.position.z = 3;
     this.components.push(mesh);
     this.register(scene);
   }

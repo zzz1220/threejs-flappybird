@@ -7,7 +7,7 @@ const loader = new THREE.TextureLoader();
 
 const numbers: THREE.Texture[] = [];
 
-for (let i = 0; i < 9; i++) {
+for (let i = 0; i < 10; i++) {
   numbers[i] = loader.load(`sprites/${i}.png`);
 }
 
@@ -27,6 +27,11 @@ export default class Score extends BaseElement {
       const mesh = new THREE.Mesh(planeGeometry, material);
       mesh.position.y = 300;
       this.meshes.push(mesh);
+      const group = new THREE.Group();
+
+      group.position.y = -90;
+      this.group = group;
+      this.scene.add(group);
     }
   }
 
@@ -41,16 +46,14 @@ export default class Score extends BaseElement {
   update() {
     const score = getScore();
     const strScore = `${score}`;
-    const group = new THREE.Group();
-    for (let s of strScore) {
-      const index = +s;
-      const c = this.meshes[index];
-      c.position.x = index * 32;
-      group.add(c);
+    const group = this.group;
+    group?.clear();
+    for (let i = 0; i < strScore.length; i++) {
+      const index = +strScore[i];
+      const c = this.meshes[index].clone();
+      c.position.x = i * 32;
+      this.group?.add(c);
     }
-    group.position.y = -90;
-    this.group = group;
     this.adjustToCenter(group);
-    this.scene.add(group);
   }
 }

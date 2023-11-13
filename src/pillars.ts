@@ -1,6 +1,10 @@
 import * as THREE from "three";
 import BaseElement from "./baseElement";
-import { PLANE_PIXEL_WIDTH } from "./constant";
+import {
+  PILLARS_HEIGHT,
+  PLANE_PIXEL_HEIGHT,
+  PLANE_PIXEL_WIDTH,
+} from "./constant";
 import { addScore } from "./gameStatus";
 
 class Pillar {
@@ -8,14 +12,15 @@ class Pillar {
   private isScored;
   constructor(x: number) {
     this.isScored = false;
-    this.addPillar(x, -200);
+    this.addPillar(x);
   }
-  addPillar(x: number, y: number) {
+  addPillar(x: number) {
+    const y = -200 - Math.floor(Math.random() * 256);
     const texture = new THREE.TextureLoader().load("sprites/pipe-green.png");
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.needsUpdate = true;
     texture.flipY = true;
-    const geometry = new THREE.PlaneGeometry(40, 200);
+    const geometry = new THREE.PlaneGeometry(40, PILLARS_HEIGHT);
     const material = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
@@ -26,7 +31,7 @@ class Pillar {
 
     const top = bottom.clone();
     top.rotateZ(Math.PI);
-    top.position.set(x, 156, 0);
+    top.position.set(x, y + PLANE_PIXEL_HEIGHT + 140, 0);
     this.meshes.push(top, bottom);
   }
 
