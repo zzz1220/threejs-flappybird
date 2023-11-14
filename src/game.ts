@@ -69,6 +69,7 @@ export default class Game {
       this.bird.fly();
       if (!this.isRunning) {
         this.bird.reset();
+        this.pillars.reset();
         this.isRunning = true;
         this.gameover.hide();
         this.menu.hide();
@@ -89,7 +90,7 @@ export default class Game {
       this.background.update();
       this.pillars.update();
       this.scorePane.update();
-      if (this.bird.checkDead()) {
+      if (this.bird.checkDead(this.pillars.getBoxes())) {
         this.isRunning = false;
         this.gameover.show();
       }

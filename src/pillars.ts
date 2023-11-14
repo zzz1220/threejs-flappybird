@@ -2,16 +2,20 @@ import * as THREE from "three";
 import BaseElement from "./baseElement";
 import {
   PILLARS_HEIGHT,
+  PILLARS_WIDTH,
   PLANE_PIXEL_HEIGHT,
   PLANE_PIXEL_WIDTH,
 } from "./constant";
 import { addScore } from "./gameStatus";
+import audioController, { Audio } from "./audioController";
 
 class Pillar {
   meshes: THREE.Mesh[] = [];
   private isScored;
+  private originX: number;
   constructor(x: number) {
     this.isScored = false;
+    this.originX = x;
     this.addPillar(x);
   }
   addPillar(x: number) {
@@ -28,7 +32,6 @@ class Pillar {
     material.map!.needsUpdate = true;
     const bottom = new THREE.Mesh(geometry, material);
     bottom.position.set(x, y, 0);
-
     const top = bottom.clone();
     top.rotateZ(Math.PI);
     top.position.set(x, y + PLANE_PIXEL_HEIGHT + 140, 0);
@@ -41,6 +44,7 @@ class Pillar {
         // only top
         if (m.position.x < 0 && !this.isScored) {
           addScore();
+          audioController.play(Audio.point);
           this.isScored = true;
         }
       }
@@ -52,6 +56,12 @@ class Pillar {
       }
     });
   }
+
+  reset() {
+    this.meshes.forEach((m) => {
+      m.position.x = this.originX;
+    });
+  }
 }
 
 export default class Pillars extends BaseElement {
@@ -60,7 +70,7 @@ export default class Pillars extends BaseElement {
   constructor(scene: THREE.Scene) {
     super(scene);
     for (let i = 0; i < 3; i++) {
-      this.list.push(new Pillar(i * 130));
+      this.list.push(new Pillar(i * 130 + 180));
       this.components.push(
         ...this.list.reduce(
           (p, c) => p.concat(...c.meshes),
@@ -72,9 +82,31 @@ export default class Pillars extends BaseElement {
   }
 
   update() {
-    // TODO: 更新x 坐标
     this.list.forEach((p) => {
       p.update();
     });
+  }
+
+  getBoxes() {
+    const ret = [];
+
+    for (let i = 0; i < this.components.length; i++) {
+      const { x, y } = this.components[i].position ?? {};
+      const min = new THREE.Vector2(
+        x - PILLARS_WIDTH / 2,
+        y - PILLARS_HEIGHT / 2,
+      );
+      const max = new THREE.Vector2(
+        x + PILLARS_WIDTH / 2,
+        y + PILLARS_HEIGHT / 2,
+      );
+      const box2 = new THREE.Box2(min, max);
+      ret.push(box2);
+    }
+    return ret;
+  }
+
+  reset() {
+    this.list.forEach((p) => p.reset());
   }
 }

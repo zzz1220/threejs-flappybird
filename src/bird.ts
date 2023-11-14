@@ -2,6 +2,7 @@ import * as THREE from "three";
 import audioContriller, { Audio } from "./audioController";
 import BaseElement from "./baseElement";
 import { setScore } from "./gameStatus";
+import { BIRD_TOUCH_AREA } from "./constant";
 
 const downflap = "sprites/bluebird-downflap.png";
 const midflap = "sprites/bluebird-midflap.png";
@@ -29,6 +30,7 @@ export default class Bird extends BaseElement {
       map: texture1,
       transparent: true,
     });
+
     this.mesh = new THREE.Mesh(body, material);
     this.mesh.position.set(0, 0, 3);
     this.components.push(this.mesh);
@@ -37,19 +39,34 @@ export default class Bird extends BaseElement {
 
   fly() {
     audioContriller.play(Audio.wing);
-    this.speed = 5;
+    this.speed = 3;
   }
 
-  checkDead() {
+  checkDead(pillars: any = []) {
+    let isDead = false;
     if (this.y < -206 || this.y > 256) {
       audioContriller.play(Audio.die);
       this.mesh!.rotation.z = -Math.PI * 0.25;
-      return true;
+      isDead = true;
     }
-    // TODO: 判断bird 和柱子相撞
+    const { x, y } = this.mesh?.position || { x: 0, y: 0 };
 
-    return false;
+    const gap = BIRD_TOUCH_AREA / 2;
+    const min = new THREE.Vector2(x - gap, y - gap);
+    const max = new THREE.Vector2(x + gap, y + gap);
+    const box2 = new THREE.Box2(min, max);
+    for (let a of pillars) {
+      if (box2.intersectsBox(a)) {
+        isDead = true;
+      }
+    }
+    if (isDead) {
+      audioContriller.play(Audio.die);
+    }
+    return isDead;
   }
+
+  checkBoxOverlap() {}
 
   reset() {
     this.y = 0;
@@ -58,7 +75,7 @@ export default class Bird extends BaseElement {
 
   update() {
     this.mesh?.position.set(0, (this.y += this.speed), 0);
-    this.speed -= 0.15;
+    this.speed -= 0.1;
     const material = this.mesh?.material;
     if (material) {
       if (this.speed > 0) {
@@ -71,6 +88,5 @@ export default class Bird extends BaseElement {
       material.needsUpdate = true;
       material.map!.needsUpdate = true;
     }
-    this.checkDead();
   }
 }
