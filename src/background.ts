@@ -1,5 +1,11 @@
 import * as THREE from "three";
-import { PLANE_PIXEL_HEIGHT, PLANE_PIXEL_WIDTH } from "./constant";
+import {
+  FLOOR_HEIGHT,
+  FLOOR_SCROLL_SPEED,
+  FLOOR_Y,
+  PLANE_PIXEL_HEIGHT,
+  PLANE_PIXEL_WIDTH,
+} from "./constant";
 import BaseElement from "./baseElement";
 
 export default class Background extends BaseElement {
@@ -35,17 +41,16 @@ export default class Background extends BaseElement {
     texture.wrapS = THREE.RepeatWrapping;
     texture.needsUpdate = true;
     this.floorTexture = texture;
-    const geometry = new THREE.PlaneGeometry(PLANE_PIXEL_WIDTH, 200);
+    const geometry = new THREE.PlaneGeometry(PLANE_PIXEL_WIDTH, FLOOR_HEIGHT);
     const material = new THREE.MeshBasicMaterial({ map: texture });
     material.map!.needsUpdate = true;
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.y = -310;
+    mesh.position.y = FLOOR_Y;
     mesh.position.z = 3;
     this.components.push(mesh);
   }
 
   update() {
-    const speed = 0.001;
-    this.floorTexture!.offset.x += speed;
+    this.floorTexture!.offset.x += FLOOR_SCROLL_SPEED;
   }
 }
