@@ -2,7 +2,15 @@ import * as THREE from "three";
 import audioContriller, { Audio } from "./audioController";
 import BaseElement from "./baseElement";
 import { setScore } from "./gameStatus";
-import { BIRD_TOUCH_AREA } from "./constant";
+import {
+  BIRD_DEAD_MAX_Y,
+  BIRD_DEAD_MIN_Y,
+  BIRD_FLY_SPEED,
+  BIRD_GRAVITY,
+  BIRD_HEIGHT,
+  BIRD_TOUCH_AREA,
+  BIRD_WIDTH,
+} from "./constant";
 
 const downflap = "sprites/bluebird-downflap.png";
 const midflap = "sprites/bluebird-midflap.png";
@@ -22,7 +30,7 @@ export default class Bird extends BaseElement {
 
   constructor(scene: THREE.Scene) {
     super(scene);
-    const body = new THREE.PlaneGeometry(32, 32);
+    const body = new THREE.PlaneGeometry(BIRD_WIDTH, BIRD_HEIGHT);
     texture1.colorSpace = THREE.SRGBColorSpace;
     texture2.colorSpace = THREE.SRGBColorSpace;
     texture3.colorSpace = THREE.SRGBColorSpace;
@@ -39,12 +47,12 @@ export default class Bird extends BaseElement {
 
   fly() {
     audioContriller.play(Audio.wing);
-    this.speed = 3;
+    this.speed = BIRD_FLY_SPEED;
   }
 
   checkDead(pillars: any = []) {
     let isDead = false;
-    if (this.y < -206 || this.y > 256) {
+    if (this.y < BIRD_DEAD_MIN_Y || this.y > BIRD_DEAD_MAX_Y) {
       audioContriller.play(Audio.die);
       this.mesh!.rotation.z = -Math.PI * 0.25;
       isDead = true;
@@ -75,7 +83,7 @@ export default class Bird extends BaseElement {
 
   update() {
     this.mesh?.position.set(0, (this.y += this.speed), 0);
-    this.speed -= 0.1;
+    this.speed -= BIRD_GRAVITY;
     const material = this.mesh?.material;
     if (material) {
       if (this.speed > 0) {

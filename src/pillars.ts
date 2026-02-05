@@ -1,6 +1,14 @@
 import * as THREE from "three";
 import BaseElement from "./baseElement";
 import {
+  PILLARS_COUNT,
+  PILLAR_BASE_Y,
+  PILLAR_MOVE_SPEED,
+  PILLAR_RANDOM_Y_RANGE,
+  PILLAR_RESET_X,
+  PILLAR_START_X,
+  PILLAR_X_SPACING,
+  PILLARS_GAP,
   PILLARS_HEIGHT,
   PILLARS_WIDTH,
   PLANE_PIXEL_HEIGHT,
@@ -19,12 +27,12 @@ class Pillar {
     this.addPillar(x);
   }
   addPillar(x: number) {
-    const y = -200 - Math.floor(Math.random() * 256);
+    const y = PILLAR_BASE_Y - Math.floor(Math.random() * PILLAR_RANDOM_Y_RANGE);
     const texture = new THREE.TextureLoader().load("sprites/pipe-green.png");
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.needsUpdate = true;
     texture.flipY = true;
-    const geometry = new THREE.PlaneGeometry(40, PILLARS_HEIGHT);
+    const geometry = new THREE.PlaneGeometry(PILLARS_WIDTH, PILLARS_HEIGHT);
     const material = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
@@ -34,7 +42,7 @@ class Pillar {
     bottom.position.set(x, y, 0);
     const top = bottom.clone();
     top.rotateZ(Math.PI);
-    top.position.set(x, y + PLANE_PIXEL_HEIGHT + 140, 0);
+    top.position.set(x, y + PLANE_PIXEL_HEIGHT + PILLARS_GAP, 0);
     this.meshes.push(top, bottom);
   }
 
@@ -49,9 +57,9 @@ class Pillar {
         }
       }
       if (m.position.x > -PLANE_PIXEL_WIDTH / 2) {
-        m.position.x -= 1;
+        m.position.x -= PILLAR_MOVE_SPEED;
       } else {
-        m.position.x = 244;
+        m.position.x = PILLAR_RESET_X;
         this.isScored = false;
       }
     });
@@ -69,8 +77,8 @@ export default class Pillars extends BaseElement {
 
   constructor(scene: THREE.Scene) {
     super(scene);
-    for (let i = 0; i < 3; i++) {
-      this.list.push(new Pillar(i * 130 + 180));
+    for (let i = 0; i < PILLARS_COUNT; i++) {
+      this.list.push(new Pillar(i * PILLAR_X_SPACING + PILLAR_START_X));
       this.components.push(
         ...this.list.reduce(
           (p, c) => p.concat(...c.meshes),

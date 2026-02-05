@@ -9,7 +9,7 @@ import Gameover from "./gameover";
 import Pillars from "./pillars";
 import Score from "./score";
 
-import { getScore } from "./gameStatus";
+import { GameState, getGameState, getScore, setGameState } from "./gameStatus";
 
 let stats: any;
 if (import.meta.env.DEV) {
@@ -20,8 +20,6 @@ if (import.meta.env.DEV) {
 }
 
 export default class Game {
-  private isRunning = false;
-
   private scene = new THREE.Scene();
   private camera = new THREE.OrthographicCamera(
     PLANE_PIXEL_WIDTH / -2,
@@ -67,10 +65,10 @@ export default class Game {
   bindOnClick() {
     document.addEventListener("click", () => {
       this.bird.fly();
-      if (!this.isRunning) {
+      if (getGameState() !== GameState.Playing) {
         this.bird.reset();
         this.pillars.reset();
-        this.isRunning = true;
+        setGameState(GameState.Playing);
         this.gameover.hide();
         this.menu.hide();
       }
@@ -82,7 +80,7 @@ export default class Game {
   }
 
   animate() {
-    if (this.isRunning) {
+    if (getGameState() === GameState.Playing) {
       if (import.meta.env.DEV) {
         stats.update();
       }
@@ -91,12 +89,12 @@ export default class Game {
       this.pillars.update();
       this.scorePane.update();
       if (this.bird.checkDead(this.pillars.getBoxes())) {
-        this.isRunning = false;
+        setGameState(GameState.GameOver);
         this.gameover.show();
       }
     }
 
-    if (!this.isRunning && getScore() === -1) {
+    if (getGameState() !== GameState.Playing && getScore() === -1) {
       this.menu.show();
     }
     requestAnimationFrame(this.animate.bind(this));
