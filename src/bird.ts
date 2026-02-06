@@ -81,9 +81,10 @@ export default class Bird extends BaseElement {
     setScore(0);
   }
 
-  update() {
-    this.mesh?.position.set(0, (this.y += this.speed), 0);
-    this.speed -= BIRD_GRAVITY;
+  update(deltaSeconds: number) {
+    const timeScale = deltaSeconds * 60;
+    this.mesh?.position.set(0, (this.y += this.speed * timeScale), 0);
+    this.speed -= BIRD_GRAVITY * timeScale;
     const material = this.mesh?.material;
     if (material) {
       if (this.speed > 0) {

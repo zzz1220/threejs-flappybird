@@ -46,7 +46,8 @@ class Pillar {
     this.meshes.push(top, bottom);
   }
 
-  update() {
+  update(deltaSeconds: number) {
+    const timeScale = deltaSeconds * 60;
     this.meshes.forEach((m, index) => {
       if (index === 0) {
         // only top
@@ -57,7 +58,7 @@ class Pillar {
         }
       }
       if (m.position.x > -PLANE_PIXEL_WIDTH / 2) {
-        m.position.x -= PILLAR_MOVE_SPEED;
+        m.position.x -= PILLAR_MOVE_SPEED * timeScale;
       } else {
         m.position.x = PILLAR_RESET_X;
         this.isScored = false;
@@ -89,9 +90,9 @@ export default class Pillars extends BaseElement {
     this.register(this.scene);
   }
 
-  update() {
+  update(deltaSeconds: number) {
     this.list.forEach((p) => {
-      p.update();
+      p.update(deltaSeconds);
     });
   }
 

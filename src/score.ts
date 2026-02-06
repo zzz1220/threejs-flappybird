@@ -43,7 +43,7 @@ export default class Score extends BaseElement {
     group.position.x = group.position.x - center.x;
   }
 
-  update() {
+  update(_deltaSeconds?: number) {
     const score = getScore();
     const strScore = `${score}`;
     const group = this.group;

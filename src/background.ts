@@ -50,7 +50,8 @@ export default class Background extends BaseElement {
     this.components.push(mesh);
   }
 
-  update() {
-    this.floorTexture!.offset.x += FLOOR_SCROLL_SPEED;
+  update(deltaSeconds: number) {
+    const timeScale = deltaSeconds * 60;
+    this.floorTexture!.offset.x += FLOOR_SCROLL_SPEED * timeScale;
   }
 }

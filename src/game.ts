@@ -31,6 +31,7 @@ export default class Game {
   );
 
   private renderer = new THREE.WebGLRenderer({ antialias: true });
+  private clock = new THREE.Clock();
 
   // game objects
   private bird = new Bird(this.scene);
@@ -80,14 +81,15 @@ export default class Game {
   }
 
   animate() {
+    const deltaSeconds = Math.min(this.clock.getDelta(), 0.05);
     if (getGameState() === GameState.Playing) {
       if (import.meta.env.DEV) {
         stats.update();
       }
-      this.bird.update();
-      this.background.update();
-      this.pillars.update();
-      this.scorePane.update();
+      this.bird.update(deltaSeconds);
+      this.background.update(deltaSeconds);
+      this.pillars.update(deltaSeconds);
+      this.scorePane.update(deltaSeconds);
       if (this.bird.checkDead(this.pillars.getBoxes())) {
         setGameState(GameState.GameOver);
         this.gameover.show();
