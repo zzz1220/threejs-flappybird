@@ -12,6 +12,10 @@
   --button-text: #f5f7ff;
   --button-border: #3a4152;
   --button-hover-border: #9aa4ff;
+  --switch-track: linear-gradient(135deg, #4c566a, #2e3440);
+  --switch-thumb: #f5f7ff;
+  --switch-glow: rgba(154, 164, 255, 0.35);
+  --switch-icon: #fbbf24;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -28,6 +32,10 @@
   --button-text: #1f2937;
   --button-border: #d0d7e2;
   --button-hover-border: #5b6dff;
+  --switch-track: linear-gradient(135deg, #c7d2fe, #e0f2fe);
+  --switch-thumb: #ffffff;
+  --switch-glow: rgba(91, 109, 255, 0.3);
+  --switch-icon: #2563eb;
 }
 
 [data-theme="dark"] {
@@ -112,5 +120,76 @@ button:focus-visible {
   top: 1.5rem;
   right: 1.5rem;
   z-index: 10;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.theme-switch {
+  --switch-width: 104px;
+  --switch-height: 48px;
+  width: var(--switch-width);
+  height: var(--switch-height);
+  border-radius: 999px;
+  background: var(--switch-track);
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+  position: relative;
+  cursor: pointer;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-switch:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.28);
+}
+
+.theme-switch__icon {
+  font-size: 1rem;
+  color: var(--switch-icon);
+  transition: opacity 200ms ease;
+}
+
+.theme-switch__icon--moon {
+  color: #e0e7ff;
+}
+
+.theme-switch__thumb {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--switch-thumb);
+  box-shadow: 0 8px 20px var(--switch-glow);
+  transform: translateX(0);
+  transition: transform 250ms ease, background-color 200ms ease, box-shadow 200ms ease;
+}
+
+[data-theme="dark"] .theme-switch__thumb {
+  transform: translateX(56px);
+}
+
+[data-theme="dark"] .theme-switch__icon--sun {
+  opacity: 0.35;
+}
+
+[data-theme="light"] .theme-switch__icon--moon {
+  opacity: 0.35;
+}
+
+.theme-switch__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
